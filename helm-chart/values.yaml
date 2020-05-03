@@ -1,0 +1,27 @@
+image:
+  repository: avernusx/otus-backend
+  tag: "0.1"
+
+replicaCount: 2
+
+deployment:
+  port: 5000
+
+service:
+  port: 5000
+
+ingress:
+  host: arch.homework
+  
+postgresql:
+  enabled: true
+  postgresqlUsername: dev
+  postgresqlPassword: dev
+  postgresqlDatabase: dev
+  service:
+    port: 5432
+  initdbUser: "postgres"
+  initdbScripts:
+    db-init.sql: |
+      CREATE EXTENSION if not exists pgcrypto;
+      

@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "migrations"
+spec:
+  template:
+    metadata:
+      name: "migrations"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: post-install-job
+        image: postgres:12.2
+        env:
+          - name: DB_USER
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: DB_USER
+          - name: DB_PASS
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: DB_PASS
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: DB_NAME
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: DB_HOST
+          - name: DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: db-config
+                key: DB_PORT
+        command:
+          - sh
+          - "-c"
+          - |
+            psql postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST)/$(DB_NAME) <<'EOF'
+              CREATE EXTENSION if not exists pgcrypto;
+              CREATE TABLE users_user (
+                  id UUID NOT NULL DEFAULT gen_random_uuid(), 
+                  name VARCHAR(256) NOT NULL,
+                  password VARCHAR(256) NOT NULL,
+                  CONSTRAINT user_user_id PRIMARY KEY (id)
+              );
+            EOF
+
+  backoffLimit: 0          

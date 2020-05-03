@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-migrations"
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}-migrations"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: post-install-job
+        image: postgres:12.2
+        env:
+          - name: DB_USER
+            value: {{ .Values.postgresql.postgresqlUsername }}
+          - name: DB_PASS
+            value: {{ .Values.postgresql.postgresqlPassword }}
+          - name: DB_NAME
+            value: {{ .Values.postgresql.postgresqlDatabase }}
+          - name: DB_HOST
+            value: {{ include "postgresql.fullname" . }}
+          - name: DB_PORT
+            value: {{ .Values.postgresql.service.port | quote }}
+        command:
+          - sh
+          - "-c"
+          - |
+            until pg_isready -h $(DB_HOST) -p $(DB_PORT); do echo "waiting for database"; sleep 2; done;
+            psql postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST)/$(DB_NAME) <<'EOF'
+              CREATE TABLE users_user (
+                  id UUID NOT NULL DEFAULT gen_random_uuid(), 
+                  name VARCHAR(256) NOT NULL,
+                  password VARCHAR(256) NOT NULL,
+                  CONSTRAINT user_user_id PRIMARY KEY (id)
+              );
+            EOF
+
+  backoffLimit: 0          

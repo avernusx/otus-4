@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app.fullname" . }}
+  labels:
+    {{- include "app.labels" . | nindent 6 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "app.selectorLabels" . | nindent 8 }}
+  template:
+    metadata:
+      labels:
+        {{- include "app.selectorLabels" . | nindent 10 }}
+    spec:
+      containers:
+        - image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          name: {{ .Chart.Name }}
+          ports:
+            - containerPort: {{ .Values.deployment.port }}
+          env:
+            - name: DB_USER
+              value: {{ .Values.postgresql.postgresqlUsername }}
+            - name: DB_PASS
+              value: {{ .Values.postgresql.postgresqlPassword }}
+            - name: DB_NAME
+              value: {{ .Values.postgresql.postgresqlDatabase }}
+            - name: DB_HOST
+              value: {{ include "postgresql.fullname" . }}
+            - name: DB_PORT
+              value: {{ .Values.postgresql.service.port | quote }}
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.deployment.port }}
+              path: /liveness-probe
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.deployment.port }}
+              path: /health
+            initialDelaySeconds: 10
+            periodSeconds: 5

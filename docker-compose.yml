@@ -1,0 +1,24 @@
+version: "3"
+services:
+  database:
+    image: postgres:12.2
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: dev
+    volumes:
+      - ./services/database:/docker-entrypoint-initdb.d
+  backend:
+    build: 
+      context: ./services/backend
+      dockerfile: ./Dev.Dockerfile
+    volumes:
+      - ./services/backend:/src
+    ports:
+      - 5000:5000
+    environment:
+      DB_USER: dev
+      DB_PASS: dev
+      DB_NAME: dev
+      DB_HOST: database
+      DB_PORT: 5432
