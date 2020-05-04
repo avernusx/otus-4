@@ -41,6 +41,7 @@ spec:
           - sh
           - "-c"
           - |
+            until pg_isready -h $(DB_HOST) -p $(DB_PORT); do echo "waiting for database"; sleep 2; done;
             psql postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST)/$(DB_NAME) <<'EOF'
               CREATE EXTENSION if not exists pgcrypto;
               CREATE TABLE users_user (
