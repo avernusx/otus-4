@@ -3,8 +3,7 @@ kind: ConfigMap
 metadata:
   name: db-config
 data:
-  DB_USER: dev
-  DB_PASS: dev
   DB_NAME: dev
   DB_HOST: database
   DB_PORT: "5432"
+  DB_SOME: " "

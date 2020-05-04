@@ -22,13 +22,13 @@ spec:
         env:
           - name: DB_USER
             valueFrom:
-              configMapKeyRef:
-                name: db-config
+              secretKeyRef:
+                name: db-requisites
                 key: DB_USER
           - name: DB_PASS
             valueFrom:
-              configMapKeyRef:
-                name: db-config
+              secretKeyRef:
+                name: db-requisites
                 key: DB_PASS
           - name: DB_NAME
             valueFrom:
