@@ -1,6 +1,6 @@
 image:
   repository: avernusx/otus-backend
-  tag: "0.1"
+  tag: "0.3.1"
 
 replicaCount: 2
 
@@ -9,9 +9,6 @@ deployment:
 
 service:
   port: 5000
-
-ingress:
-  host: arch.homework
   
 postgresql:
   enabled: true
@@ -24,4 +21,29 @@ postgresql:
   initdbScripts:
     db-init.sql: |
       CREATE EXTENSION if not exists pgcrypto;
+  metrics:
+    enabled: true
+    service:
+      type: NodePort
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9187"
+      loadBalancerIP:
+    serviceMonitor:
+      enabled: true
+      additionalLabels: {}
+      namespace: default
+      interval: 15s
+      scrapeTimeout: 10s
       
+metrics:
+  serviceMonitor:
+    enabled: true     
+
+ingress:
+  enabled: true
+  hosts:
+    - host: arch.homework
+      paths: ["/otusapp"] 
+
+ingressName: nginx-nginx-ingress-controller      

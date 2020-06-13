@@ -7,8 +7,9 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.service.port }}
+      name: web
       protocol: TCP
       targetPort: {{ .Values.deployment.port }}
   selector:
-    {{- include "app.selectorLabels" . | nindent 6 }}
+    {{- include "app.selectorLabels" . | nindent 4 }}
   type: NodePort
