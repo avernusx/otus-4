@@ -8,14 +8,28 @@ services:
       POSTGRES_DB: dev
     volumes:
       - ./services/database:/docker-entrypoint-initdb.d
-  backend:
+  auth:
     build: 
-      context: ./services/backend
+      context: ./services/auth
       dockerfile: ./Dev.Dockerfile
     volumes:
-      - ./services/backend:/src
+      - ./services/auth:/src
     ports:
       - 5000:5000
+    environment:
+      DB_USER: dev
+      DB_PASS: dev
+      DB_NAME: dev
+      DB_HOST: database
+      DB_PORT: 5432
+  users:
+    build: 
+      context: ./services/users
+      dockerfile: ./Dev.Dockerfile
+    volumes:
+      - ./services/users:/src
+    ports:
+      - 5001:5000
     environment:
       DB_USER: dev
       DB_PASS: dev
