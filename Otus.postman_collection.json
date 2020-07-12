@@ -1,20 +1,37 @@
 {
 	"info": {
-		"_postman_id": "fbef3233-22df-4b36-8f08-dcd365f5a2e7",
-		"name": "Otus",
+		"_postman_id": "e557eb1f-6f56-41d9-88e7-9626ead284be",
+		"name": "Otus 4",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Создать пользователя",
+			"name": "create user 1",
 			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7563c34a-fa71-48e6-b12f-eff5565fe59a",
+						"exec": [
+							"pm.collectionVariables.set(\"password1\", pm.variables.replaceIn('{{$randomPassword}}'))",
+							"pm.collectionVariables.set(\"password2\", pm.variables.replaceIn('{{$randomPassword}}'))",
+							"pm.collectionVariables.set(\"login1\", pm.variables.replaceIn('{{$randomLastName}}'))",
+							"pm.collectionVariables.set(\"login2\", pm.variables.replaceIn('{{$randomLastName}}'))",
+							"pm.collectionVariables.set(\"email1\", pm.variables.replaceIn('{{$randomEmail}}'))",
+							"pm.collectionVariables.set(\"email2\", pm.variables.replaceIn('{{$randomEmail}}'))",
+							"pm.collectionVariables.set(\"username1\", pm.variables.replaceIn('{{$randomFullName}}'))",
+							"pm.collectionVariables.set(\"username2\", pm.variables.replaceIn('{{$randomFullName}}'))",
+							"pm.collectionVariables.set(\"username1_u\", pm.variables.replaceIn('{{$randomFullName}}'))"
+						],
+						"type": "text/javascript"
+					}
+				},
 				{
 					"listen": "test",
 					"script": {
-						"id": "81a5e1e7-edfe-416f-8450-d37a0cf50d59",
+						"id": "ff9d74e1-9b3c-4695-a79c-88af7b18c26c",
 						"exec": [
-							"let jsonData = JSON.parse(responseBody)",
-							"pm.collectionVariables.set(\"userId\", jsonData.id)"
+							"console.log(request.data)"
 						],
 						"type": "text/javascript"
 					}
@@ -25,7 +42,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Игорь\",\n\t\"password\": \"123456\"\n}",
+					"raw": "{\n    \"login\": \"{{login1}}\",\n    \"email\": \"{{email1}}\",\n    \"name\": \"{{username1}}\",\n    \"password\": \"{{password1}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -33,51 +50,78 @@
 					}
 				},
 				"url": {
-					"raw": "http://arch.homework/otusapp/api/user",
+					"raw": "http://{{baseUrl}}/create",
 					"protocol": "http",
 					"host": [
-						"arch",
-						"homework"
+						"{{baseUrl}}"
 					],
 					"path": [
-						"otusapp",
-						"api",
-						"user"
+						"create"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Получить пользователя",
+			"name": "unauthorized profile view",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "30e1b771-4a0d-40dc-86a8-7b8795f42bdc",
+						"exec": [
+							"pm.response.to.have.body(\"You are not authorized\");",
+							"console.log(responseBody)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "",
+						"type": "text",
+						"value": "",
+						"disabled": true
+					}
+				],
 				"url": {
-					"raw": "http://arch.homework/otusapp/api/user/{{userId}}",
+					"raw": "http://{{baseUrl}}/me",
 					"protocol": "http",
 					"host": [
-						"arch",
-						"homework"
+						"{{baseUrl}}"
 					],
 					"path": [
-						"otusapp",
-						"api",
-						"user",
-						"{{userId}}"
+						"me"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Обновить пользователя",
+			"name": "sign in user 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "aa0cee8f-a32a-4e83-8820-651369f9c1ee",
+						"exec": [
+							"pm.collectionVariables.set('userToken1', responseBody);",
+							"console.log(request.data)",
+							"console.log(\"Token received \" + responseBody)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
-				"method": "PATCH",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Валера\",\n\t\"password\": \"654321\"\n}",
+					"raw": "{\n    \"login\": \"{{login1}}\",\n    \"password\": \"{{password1}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -85,60 +129,267 @@
 					}
 				},
 				"url": {
-					"raw": "http://arch.homework/otusapp/api/user/{{userId}}",
+					"raw": "http://{{baseUrl}}/signin",
 					"protocol": "http",
 					"host": [
-						"arch",
-						"homework"
+						"{{baseUrl}}"
 					],
 					"path": [
-						"otusapp",
-						"api",
-						"user",
-						"{{userId}}"
+						"signin"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Получить список пользователей",
+			"name": "update user 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "df2aabbd-812f-4c1a-925a-17882f61b0b7",
+						"exec": [
+							"console.log(request.data)",
+							"console.log(\"Token transmitted \", request.headers['x-token'])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "X-Token",
+						"type": "text",
+						"value": "{{userToken1}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{username1_u}}\",\n    \"login\": \"{{login1}}\",\n    \"password\": \"{{password1}}\",\n    \"email\": \"{{email1}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/update",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "check user 1 update",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2996299f-0425-406c-9e43-a483d105df5e",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"var username = pm.collectionVariables.get(\"username1_u\");",
+							"pm.expect(jsonData.name).to.eql(username);",
+							"",
+							"console.log(\"Token transmitted \" + request.headers['x-token'])",
+							"console.log(responseBody)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "55375953-ed7c-4bf9-a893-ecc39d3c8d74",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "X-Token",
+						"type": "text",
+						"value": "{{userToken1}}"
+					}
+				],
 				"url": {
-					"raw": "http://arch.homework/otusapp/api/user",
+					"raw": "http://{{baseUrl}}/me",
 					"protocol": "http",
 					"host": [
-						"arch",
-						"homework"
+						"{{baseUrl}}"
 					],
 					"path": [
-						"otusapp",
-						"api",
-						"user"
+						"me"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Удалить пользователя",
+			"name": "sign out user 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "93a8f192-4d6c-4251-be63-0df60f05e246",
+						"exec": [
+							"console.log(\"Token transmitted \" + request.headers['x-token'])"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
-				"method": "DELETE",
-				"header": [],
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Token",
+						"type": "text",
+						"value": "{{userToken1}}"
+					}
+				],
 				"url": {
-					"raw": "http://arch.homework/otusapp/api/user/{{userId}}",
+					"raw": "http://{{baseUrl}}/signout",
 					"protocol": "http",
 					"host": [
-						"arch",
-						"homework"
+						"{{baseUrl}}"
 					],
 					"path": [
-						"otusapp",
-						"api",
-						"user",
-						"{{userId}}"
+						"signout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "29dc26fd-3c1f-4624-a4ce-90a96bbc5fd0",
+						"exec": [
+							"console.log(request.data)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login\": \"{{login2}}\",\n    \"email\": \"{{email2}}\",\n    \"name\": \"{{username2}}\",\n    \"password\": \"{{password2}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/create",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sign in user 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "53285ee5-b564-4a08-8f76-cff4ef48292f",
+						"exec": [
+							"pm.collectionVariables.set('userToken2', responseBody);",
+							"console.log(request.data)",
+							"console.log(\"Token \" + responseBody)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login\": \"{{login2}}\",\n    \"password\": \"{{password2}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/signin",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "view user 2 profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3cddfe1f-ab1f-442c-930b-0ba0528f64d6",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"var username = pm.collectionVariables.get(\"username2\");",
+							"pm.expect(jsonData.name).to.eql(username);",
+							"",
+							"console.log(\"Token transmitted \" + request.headers['x-token'])",
+							"console.log(responseBody)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Token",
+						"type": "text",
+						"value": "{{userToken2}}"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/me",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"me"
 					]
 				}
 			},
@@ -149,7 +400,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "c4e3840b-7f30-471e-9b10-36b3aa5e0495",
+				"id": "05df2086-c873-4d02-9514-fc1e1e9e6842",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -159,7 +410,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "c62a8e09-2837-4dbf-9b59-eabbcbcce323",
+				"id": "e1d89585-df1e-4abc-98b6-b41a5d3eb083",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -169,10 +420,64 @@
 	],
 	"variable": [
 		{
-			"id": "f11a58eb-7c5c-4db5-85aa-cb84bdf93b42",
-			"key": "userId",
-			"value": "0",
-			"type": "string"
+			"id": "881969ad-1c8e-4ca3-ad83-0b7fb0d8b8ba",
+			"key": "baseUrl",
+			"value": "arch.homework"
+		},
+		{
+			"id": "4d44b389-034d-4ca2-90e8-c0b321702e59",
+			"key": "password1",
+			"value": ""
+		},
+		{
+			"id": "fb483468-3f78-4f87-9dfb-ed66173e8820",
+			"key": "username1",
+			"value": ""
+		},
+		{
+			"id": "13bd8464-8089-4581-b1e7-f70b1058a424",
+			"key": "login1",
+			"value": ""
+		},
+		{
+			"id": "98727938-fa23-4f39-b29d-9c23e2d0d4d2",
+			"key": "email1",
+			"value": ""
+		},
+		{
+			"id": "036f716a-7d2f-4d58-8029-d999fd0f90ae",
+			"key": "username1_u",
+			"value": ""
+		},
+		{
+			"id": "8f5450b6-69ea-4bf0-9b83-78f9dbc3c38c",
+			"key": "password2",
+			"value": ""
+		},
+		{
+			"id": "51b55e8c-7931-46b5-868e-d156455a2da7",
+			"key": "username2",
+			"value": ""
+		},
+		{
+			"id": "0be1018b-1e8a-40fb-8890-cb027a2532b5",
+			"key": "login2",
+			"value": ""
+		},
+		{
+			"id": "9eb5dbfa-4872-4a7a-a7f8-ed6b01e860cd",
+			"key": "email2",
+			"value": ""
+		},
+		{
+			"id": "56a09105-2cea-4e18-bdab-14549f97bcdf",
+			"key": "userToken1",
+			"value": ""
+		},
+		{
+			"id": "88b78d06-dcff-43a5-85c2-a2853233eacb",
+			"key": "userToken2",
+			"value": ""
 		}
 	],
 	"protocolProfileBehavior": {}

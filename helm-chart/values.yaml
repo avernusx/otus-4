@@ -2,7 +2,7 @@ services:
   auth:
     image:
       repository: avernusx/otus4-auth
-      tag: "0.1"
+      tag: "0.2"
     replicaCount: 1
     deployment:
       port: 5000

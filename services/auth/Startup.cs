@@ -83,7 +83,7 @@ namespace backend
 
             if (token == null || !sessions.ContainsKey(token))
             {
-                this.HttpContext.Response.StatusCode = 404;
+                this.HttpContext.Response.StatusCode = 401;
                 return "";
             }
 
