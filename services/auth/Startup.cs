@@ -19,6 +19,8 @@ namespace backend
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+        public string login { get; set; }
+        public string email { get; set; }
         public string name { get; set; }
         public string password { get; set; }
     }
@@ -68,6 +70,12 @@ namespace backend
             _context = context;
         }
 
+        [HttpGet("/health")]
+        public String ReadinessProbe()
+        {
+            return "{ \"status\": \"OK\" }";
+        }
+
         [HttpGet("auth")]
         public async Task<string> Auth()
         {
@@ -84,10 +92,16 @@ namespace backend
             return "";
         }
 
+        [HttpGet("not-authorized")]
+        public async Task<string> Nonauthorized()
+        {
+            return "You are not authorized";
+        }
+
         [HttpPost("signin")]
         public async Task<string> SignIn([FromBody] User data)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(model => model.name == data.name && model.password == data.password);
+            var user = await _context.Users.FirstOrDefaultAsync(model => model.login == data.login && model.password == data.password);
 
             if (user == null)
             {

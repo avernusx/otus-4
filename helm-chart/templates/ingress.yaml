@@ -1,29 +1,55 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "app.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
-  labels:
-    {{- include "app.labels" . | nindent 4 }}
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: nonauthorized-ingress
 spec:
   rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-        {{- range .paths }}
-          - path: {{ . }}($|/)(.*)
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-        {{- end }}
-  {{- end }}
-{{- end }}
+  - host: arch.homework
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .Release.Name }}-users
+          servicePort: 5000
+        path: /create
+      - backend:
+          serviceName: {{ .Release.Name }}-auth
+          servicePort: 5000
+        path: /signin
+      - backend:
+          serviceName: {{ .Release.Name }}-auth
+          servicePort: 5000
+        path: /signout
+      - backend:
+          serviceName: {{ .Release.Name }}-auth
+          servicePort: 5000
+        path: /auth
+      - backend:
+          serviceName: {{ .Release.Name }}-auth
+          servicePort: 5000
+        path: /not-authorized
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: authorized-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: "http://{{ .Release.Name }}-auth.default.svc.cluster.local:5000/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "http://$host/not-authorized"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-User-Id"
+spec:
+  rules:
+  - host: arch.homework
+    http:
+      paths:
+      - backend:
+          serviceName: {{ .Release.Name }}-users
+          servicePort: 5000
+        path: /me
+      - backend:
+          serviceName: {{ .Release.Name }}-users
+          servicePort: 5000
+        path: /update
+      - backend:
+          serviceName: {{ .Release.Name }}-users
+          servicePort: 5000
+        path: /health

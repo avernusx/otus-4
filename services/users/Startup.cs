@@ -19,6 +19,8 @@ namespace backend
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid id { get; set; }
+        public string login { get; set; }
+        public string email { get; set; }
         public string name { get; set; }
         public string password { get; set; }
     }
@@ -49,11 +51,48 @@ namespace backend
             _context = context;
         }
 
+        [HttpGet("/health")]
+        public String ReadinessProbe()
+        {
+            return "{ \"status\": \"OK\" }";
+        }
+
         [HttpPost("create")]
         public async Task<User> Create([FromBody] User user)
         {
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+            return user;
+        }
+
+        [HttpPatch("update")]
+        public async Task<User> Update([FromBody] User data)
+        {
+            string id = Request.Headers["X-User-Id"];
+            Guid guid = new Guid();
+
+            try {
+                guid = new Guid(id);
+            } catch (Exception exception) {
+                this.HttpContext.Response.StatusCode = 401;
+                return new User();
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(model => model.id == guid);
+
+            if (user == null)
+            {
+                this.HttpContext.Response.StatusCode = 404;
+                return new User();
+            }
+
+            user.name = data.name;
+            user.password = data.password;
+            
+            _context.Users.Update(user);
+
+            await _context.SaveChangesAsync();
+                    
             return user;
         }
 
@@ -66,7 +105,7 @@ namespace backend
             try {
                 guid = new Guid(id);
             } catch (Exception exception) {
-                this.HttpContext.Response.StatusCode = 404;
+                this.HttpContext.Response.StatusCode = 401;
                 return new User();
             }
             
@@ -74,7 +113,7 @@ namespace backend
 
             if (user == null)
             {
-                this.HttpContext.Response.StatusCode = 404;
+                this.HttpContext.Response.StatusCode = 401;
                 return new User();
             }
             return user;

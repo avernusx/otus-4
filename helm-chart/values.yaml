@@ -1,14 +1,22 @@
-image:
-  repository: avernusx/otus-backend
-  tag: "0.3.1"
-
-replicaCount: 2
-
-deployment:
-  port: 5000
-
-service:
-  port: 5000
+services:
+  auth:
+    image:
+      repository: avernusx/otus4-auth
+      tag: "0.1"
+    replicaCount: 1
+    deployment:
+      port: 5000
+    service:
+      port: 5000
+  users:
+    image:
+      repository: avernusx/otus4-users
+      tag: "0.1"
+    replicaCount: 1
+    deployment:
+      port: 5000
+    service:
+      port: 5000
   
 postgresql:
   enabled: true
@@ -20,25 +28,7 @@ postgresql:
   initdbUser: "postgres"
   initdbScripts:
     db-init.sql: |
-      CREATE EXTENSION if not exists pgcrypto;
-  metrics:
-    enabled: true
-    service:
-      type: NodePort
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "9187"
-      loadBalancerIP:
-    serviceMonitor:
-      enabled: true
-      additionalLabels: {}
-      namespace: default
-      interval: 15s
-      scrapeTimeout: 10s
-      
-metrics:
-  serviceMonitor:
-    enabled: true     
+      CREATE EXTENSION if not exists pgcrypto;  
 
 ingress:
   enabled: true
