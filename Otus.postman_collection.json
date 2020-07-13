@@ -31,7 +31,8 @@
 					"script": {
 						"id": "ff9d74e1-9b3c-4695-a79c-88af7b18c26c",
 						"exec": [
-							"console.log(request.data)"
+							"console.log(\"REQUEST\", request.data)",
+							"console.log(\"RESPONSE\", responseBody)"
 						],
 						"type": "text/javascript"
 					}
@@ -63,15 +64,19 @@
 			"response": []
 		},
 		{
-			"name": "unauthorized profile view",
+			"name": "unauthenticated profile view",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"id": "30e1b771-4a0d-40dc-86a8-7b8795f42bdc",
 						"exec": [
-							"pm.response.to.have.body(\"You are not authorized\");",
-							"console.log(responseBody)"
+							"pm.test(\"Неаутентифицированный пользователь не имеет доступа к профилю\", function () {",
+							"    pm.response.to.have.body(\"You are not authorized\")",
+							"})",
+							"",
+							"console.log(\"REQUEST\", request.data)",
+							"console.log(\"RESPONSE\", responseBody)"
 						],
 						"type": "text/javascript"
 					}
@@ -109,7 +114,8 @@
 						"id": "aa0cee8f-a32a-4e83-8820-651369f9c1ee",
 						"exec": [
 							"pm.collectionVariables.set('userToken1', responseBody);",
-							"console.log(request.data)",
+							"console.log(\"REQUEST\", request.data)",
+							"console.log(\"RESPONSE\", responseBody)",
 							"console.log(\"Token received \" + responseBody)"
 						],
 						"type": "text/javascript"
@@ -149,8 +155,9 @@
 					"script": {
 						"id": "df2aabbd-812f-4c1a-925a-17882f61b0b7",
 						"exec": [
-							"console.log(request.data)",
-							"console.log(\"Token transmitted \", request.headers['x-token'])"
+							"console.log(\"Token transmitted \", request.headers['x-token'])",
+							"console.log(\"REQUEST\", request.data)",
+							"console.log(\"RESPONSE\", responseBody)"
 						],
 						"type": "text/javascript"
 					}
@@ -197,10 +204,14 @@
 						"exec": [
 							"var jsonData = pm.response.json();",
 							"var username = pm.collectionVariables.get(\"username1_u\");",
-							"pm.expect(jsonData.name).to.eql(username);",
+							"",
+							"pm.test(\"После апдейта пользователя изменения должны отобразиться в профиле\", function () {",
+							"    pm.expect(jsonData.name).to.eql(username)",
+							"})",
 							"",
 							"console.log(\"Token transmitted \" + request.headers['x-token'])",
-							"console.log(responseBody)"
+							"console.log(\"REQUEST\", request.data)",
+							"console.log(\"RESPONSE\", responseBody)"
 						],
 						"type": "text/javascript"
 					}
@@ -246,7 +257,9 @@
 					"script": {
 						"id": "93a8f192-4d6c-4251-be63-0df60f05e246",
 						"exec": [
-							"console.log(\"Token transmitted \" + request.headers['x-token'])"
+							"console.log(\"Token transmitted \" + request.headers['x-token'])",
+							"console.log(\"REQUEST\", request.data)",
+							"console.log(\"RESPONSE\", responseBody)"
 						],
 						"type": "text/javascript"
 					}
@@ -282,7 +295,8 @@
 					"script": {
 						"id": "29dc26fd-3c1f-4624-a4ce-90a96bbc5fd0",
 						"exec": [
-							"console.log(request.data)"
+							"console.log(\"REQUEST\", request.data)",
+							"console.log(\"RESPONSE\", responseBody)"
 						],
 						"type": "text/javascript"
 					}
@@ -322,8 +336,9 @@
 						"id": "53285ee5-b564-4a08-8f76-cff4ef48292f",
 						"exec": [
 							"pm.collectionVariables.set('userToken2', responseBody);",
-							"console.log(request.data)",
-							"console.log(\"Token \" + responseBody)"
+							"console.log(\"REQUEST\", request.data)",
+							"console.log(\"RESPONSE\", responseBody)",
+							"console.log(\"Token received \" + responseBody)"
 						],
 						"type": "text/javascript"
 					}
@@ -364,10 +379,14 @@
 						"exec": [
 							"var jsonData = pm.response.json();",
 							"var username = pm.collectionVariables.get(\"username2\");",
-							"pm.expect(jsonData.name).to.eql(username);",
+							"",
+							"pm.test(\"Пользователь номер два видит в профиле свои данные\", function () {",
+							"    pm.expect(jsonData.name).to.eql(username)",
+							"})",
 							"",
 							"console.log(\"Token transmitted \" + request.headers['x-token'])",
-							"console.log(responseBody)"
+							"console.log(\"REQUEST\", request.data)",
+							"console.log(\"RESPONSE\", responseBody)"
 						],
 						"type": "text/javascript"
 					}
@@ -420,62 +439,62 @@
 	],
 	"variable": [
 		{
-			"id": "881969ad-1c8e-4ca3-ad83-0b7fb0d8b8ba",
+			"id": "08a3244e-c537-4ec7-bea9-c98b732005e5",
 			"key": "baseUrl",
 			"value": "arch.homework"
 		},
 		{
-			"id": "4d44b389-034d-4ca2-90e8-c0b321702e59",
+			"id": "59a58c38-980c-4b9e-9095-2af49182ef41",
 			"key": "password1",
 			"value": ""
 		},
 		{
-			"id": "fb483468-3f78-4f87-9dfb-ed66173e8820",
+			"id": "ecf47bd0-8405-44b1-a272-47c693e7ed10",
 			"key": "username1",
 			"value": ""
 		},
 		{
-			"id": "13bd8464-8089-4581-b1e7-f70b1058a424",
+			"id": "d9ccbc41-d32e-4608-9860-93b922f37866",
 			"key": "login1",
 			"value": ""
 		},
 		{
-			"id": "98727938-fa23-4f39-b29d-9c23e2d0d4d2",
+			"id": "20076227-a2a9-4e67-8345-803d44040908",
 			"key": "email1",
 			"value": ""
 		},
 		{
-			"id": "036f716a-7d2f-4d58-8029-d999fd0f90ae",
+			"id": "4ade9f54-effa-4182-8036-fa7a0c0c704b",
 			"key": "username1_u",
 			"value": ""
 		},
 		{
-			"id": "8f5450b6-69ea-4bf0-9b83-78f9dbc3c38c",
+			"id": "0a973db6-73d0-479e-9501-c5821e133e0c",
 			"key": "password2",
 			"value": ""
 		},
 		{
-			"id": "51b55e8c-7931-46b5-868e-d156455a2da7",
+			"id": "0c5abf02-eaef-49c6-a784-bc250f92a4ac",
 			"key": "username2",
 			"value": ""
 		},
 		{
-			"id": "0be1018b-1e8a-40fb-8890-cb027a2532b5",
+			"id": "9061307b-cce2-42c7-ab25-3fe62d416f2a",
 			"key": "login2",
 			"value": ""
 		},
 		{
-			"id": "9eb5dbfa-4872-4a7a-a7f8-ed6b01e860cd",
+			"id": "db97cff6-6302-4941-a448-284b97c406a3",
 			"key": "email2",
 			"value": ""
 		},
 		{
-			"id": "56a09105-2cea-4e18-bdab-14549f97bcdf",
+			"id": "7928e728-1ae2-4910-9b3f-1bfb6a941cca",
 			"key": "userToken1",
 			"value": ""
 		},
 		{
-			"id": "88b78d06-dcff-43a5-85c2-a2853233eacb",
+			"id": "15a0fb28-0eff-4657-9722-a871c38fe1b6",
 			"key": "userToken2",
 			"value": ""
 		}
